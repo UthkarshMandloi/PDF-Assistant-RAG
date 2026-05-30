@@ -46,7 +46,7 @@ function DocumentSkeleton() {
 }
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const router = useRouter();
 
   const [documents, setDocuments] = useState<DocInfo[]>([]);
@@ -57,10 +57,10 @@ export default function DashboardPage() {
   const [connectionError, setConnectionError] = useState("");
   const [documentsLoading, setDocumentsLoading] = useState(true);
 
-    // Auth guard
+  // Auth guard
   useEffect(() => {
-    if (!loading && !user) router.replace("/login");
-  }, [user, loading, router]);
+    if (initialized && !user) router.replace("/login");
+  }, [user, initialized, router]);
 
   // Intercept dashboard if Hugging Face token configuration is missing
   useEffect(() => {
@@ -120,7 +120,7 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [documents, loadDocuments]);
 
-  if (loading || !user) {
+  if (!initialized || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse-glow w-12 h-12 rounded-full bg-primary/20" />
